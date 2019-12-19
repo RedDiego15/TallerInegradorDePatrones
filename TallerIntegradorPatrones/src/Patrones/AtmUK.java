@@ -7,18 +7,19 @@ package Patrones;
 
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Scanner;
 
 public class AtmUK {
     protected final Locale currency=Locale.UK;
     protected double dinero = 0;
-    protected ArrayList <Manejador> manejadores; // Cada manejador puede entregar dinero de una sola denominación  Chain responsability
+    protected ArrayList <Transaction> manejadores; // Cada manejador puede entregar dinero de una sola denominación  Chain responsability
     private Scanner sc = new Scanner(System.in);
 
     // -----------------
     public AtmUK() {
-      manejadores = new ArrayList<Manejador>();
+      manejadores = new ArrayList<Transaction>();
     }
     // -----------------
     public double getTotal() {
@@ -28,6 +29,24 @@ public class AtmUK {
     // -----------------
     public void sacarDinero(double dinero) {
         this.dinero -= dinero;
+        
+        /*
+        Al tener un arrayList vamos a aprovechar el orden que tiene y en la primera posicion pondremos los manejadores de mayor 
+        denominacion, para que entregue la menor cantidad de billetas y monedas posibles
+        */
+        Iterator<Transaction> it = this.manejadores.iterator();
+        
+        while(dinero>0 || it.hasNext()){
+            Transaction m = it.next();
+            if(m instanceof ManejadorEntero){
+                ManejadorEntero mje = (ManejadorEntero)(m);
+                dinero-=mje.retirar(dinero);  
+            }else{
+                ManejadorDouble mjd = (ManejadorDouble)(m);
+                dinero-=mjd.retirar(dinero);   
+            }
+            System.out.println(dinero);
+        }
         // Todo: realizar el proceso de sacar de cada manejador la cantidad requerida
     }
 
@@ -35,12 +54,32 @@ public class AtmUK {
     public void ingresarDinero(double dinero, int denominacion) {
         this.dinero += dinero;
         // Todo: Sólo se puede depositar billetes de una sola denominación y agregarse al manejador correspondiente
+        Iterator<Transaction> it = this.manejadores.iterator();
+  
+        while(it.hasNext()){
+            Transaction m = it.next();
+            if(m instanceof ManejadorEntero){
+                ManejadorEntero mje = (ManejadorEntero)(m);
+                if(mje.getDenominacion()==denominacion){
+                    mje.setMonto(mje.getMonto()+new Double(dinero/denominacion).intValue());  
+                    break;
+                }
+            }else{
+                ManejadorDouble mjd = (ManejadorDouble)(m);
+                if(mjd.getDenominacion()==denominacion){
+                    mjd.setMonto(mjd.getMonto()+new Double(dinero/denominacion).intValue());  
+                    break;
+                }
+                
+            }
+        }
+   
     }
 
-    public void addManejador(Manejador m){
+    public void addManejador(Transaction m){
         manejadores.add(m);
     }
-    public Manejador removeManejador(int i){
+    public Transaction removeManejador(int i){
         return manejadores.remove(i);
     }
 
@@ -64,6 +103,13 @@ public class AtmUK {
                     anotherTransaction(cuenta); // ask if they want another transaction
                 } else {
                     // Todo: verificar que se puede realizar el retiro del atm
+                    if(dinero-amount>0 && (cuenta.getAmount()-amount>0)){
+                        sacarDinero(amount);
+                        cuenta.withdraw(amount);
+                        System.out.println("You have withdrawn "+amount+" and your new balance is "+cuenta.getAmount());
+                    }else{
+                        System.out.println("saldo Insuficiente");
+                    }
 
                     // Todo: actualizar tanto la cuenta como el atm y de los manejadores
                     // cuenta.retirar(amount);
