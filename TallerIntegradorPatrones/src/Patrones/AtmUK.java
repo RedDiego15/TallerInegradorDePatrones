@@ -20,6 +20,13 @@ public class AtmUK {
     // -----------------
     public AtmUK() {
       manejadores = new ArrayList<Transaction>();
+      this.addManejador(new ManejadorEntero(0,20));
+      this.addManejador(new ManejadorEntero(0,10));
+      this.addManejador(new ManejadorDouble(0,0.50));
+      this.addManejador(new ManejadorDouble(0,0.25));
+      this.addManejador(new ManejadorDouble(0,0.05));
+
+
     }
     // -----------------
     public double getTotal() {
@@ -45,13 +52,36 @@ public class AtmUK {
                 ManejadorDouble mjd = (ManejadorDouble)(m);
                 dinero-=mjd.retirar(dinero);   
             }
-            System.out.println(dinero);
         }
         // Todo: realizar el proceso de sacar de cada manejador la cantidad requerida
     }
 
     // -----------------
     public void ingresarDinero(double dinero, int denominacion) {
+        this.dinero += dinero;
+        // Todo: Sólo se puede depositar billetes de una sola denominación y agregarse al manejador correspondiente
+        Iterator<Transaction> it = this.manejadores.iterator();
+  
+        while(it.hasNext()){
+            Transaction m = it.next();
+            if(m instanceof ManejadorEntero){
+                ManejadorEntero mje = (ManejadorEntero)(m);
+                if(mje.getDenominacion()==denominacion){
+                    mje.setMonto(mje.getMonto()+new Double(dinero/denominacion).intValue());  
+                    break;
+                }
+            }else{
+                ManejadorDouble mjd = (ManejadorDouble)(m);
+                if(mjd.getDenominacion()==denominacion){
+                    mjd.setMonto(mjd.getMonto()+new Double(dinero/denominacion).intValue());  
+                    break;
+                }
+                
+            }
+        }
+   
+    }
+     public void ingresarDinero(double dinero, double denominacion) {
         this.dinero += dinero;
         // Todo: Sólo se puede depositar billetes de una sola denominación y agregarse al manejador correspondiente
         Iterator<Transaction> it = this.manejadores.iterator();
@@ -103,17 +133,13 @@ public class AtmUK {
                     anotherTransaction(cuenta); // ask if they want another transaction
                 } else {
                     // Todo: verificar que se puede realizar el retiro del atm
-                    if(dinero-amount>0 && (cuenta.getAmount()-amount>0)){
-                        sacarDinero(amount);
-                        cuenta.withdraw(amount);
-                        System.out.println("You have withdrawn "+amount+" and your new balance is "+cuenta.getAmount());
-                    }else{
-                        System.out.println("saldo Insuficiente");
-                    }
 
                     // Todo: actualizar tanto la cuenta como el atm y de los manejadores
                     // cuenta.retirar(amount);
                     // AtmUK.sacarDinero(amount);
+                    sacarDinero(amount);
+                    cuenta.withdraw(amount);
+                    System.out.println("You have withdrawn "+amount+" and your new balance is "+cuenta.getAmount());
 
                     // Todo: Mostrar resumen de transacción o error
                     // "You have withdrawn "+amount+" and your new balance is "+balance;
@@ -121,24 +147,44 @@ public class AtmUK {
                 }
             break; 
             case 2:
-                    // option number 2 is depositing 
-                    float deposit; 
-                    System.out.println("Please enter amount you would wish to deposit: "); 
-                    deposit = sc.nextFloat();
-                    // Todo: actualizar tanto la cuenta como el atm
-                    
-                    // Todo: Mostrar resumen de transacción o error
-                    // "You have withdrawn "+amount+" and your new balance is "+balance;
-                    anotherTransaction(cuenta);
+                // option number 2 is depositing 
+                float deposit; 
+                System.out.println("Please enter amount you would wish to deposit: "); 
+                deposit = sc.nextFloat();
+                System.out.println("Please enter denomination of your bills: "); 
+                int denomination = sc.nextInt();
+                sc.nextLine();
+                this.ingresarDinero(deposit, denomination);
+                cuenta.deposit(deposit);
+                
+
+                // Todo: actualizar tanto la cuenta como el atm
+
+                // Todo: Mostrar resumen de transacción o error
+                System.out.println("You have Deposit: "+deposit+" and your new balance is "+cuenta.getAmount());
+                anotherTransaction(cuenta);
             break; 
             case 3:
-                    // Todo: mostrar el balance de la cuenta
-                    // "Your balance is "+balance
-                    anotherTransaction(cuenta); 
+                // Todo: mostrar el balance de la cuenta
+                System.out.println("Your balance is "+cuenta.getAmount());
+                anotherTransaction(cuenta); 
             break;
             case 4:
-                    // Todo: mostrar el balance del ATM con los billetes en cada manejador
-                    anotherTransaction(cuenta); 
+                // Todo: mostrar el balance del ATM con los billetes en cada manejador
+                System.out.println("Dinero disponible en el atm: "+dinero);
+                Iterator<Transaction> it = this.manejadores.iterator();
+        
+                while(it.hasNext()){
+                    Transaction m = it.next();
+                    if(m instanceof ManejadorEntero){
+                        ManejadorEntero mje = (ManejadorEntero)(m);
+                        System.out.println("Quedan: "+mje.getMonto()+" Billetes de: "+mje.getDenominacion()); 
+                    }else{
+                        ManejadorDouble mjd = (ManejadorDouble)(m);
+                        System.out.println("Quedan: "+mjd.getMonto()+" Billetes de: "+mjd.getDenominacion()); 
+                    }
+                }
+                anotherTransaction(cuenta); 
             break;
             default:
                     System.out.println("Invalid option:\n\n"); 
@@ -146,6 +192,7 @@ public class AtmUK {
             break;
         }
     }
+    
     public void anotherTransaction(Account cuenta){
         System.out.println("Do you want another transaction?\n\nPress 1 for another transaction\n2 To exit");
         int anotherTransaction = sc.nextInt();

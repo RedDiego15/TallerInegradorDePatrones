@@ -22,7 +22,7 @@ public class ManejadorDouble implements Transaction{
     public void setMonto(int monto){ this.monto = monto; }
     
     /*
-    metodo que disminye la catidad de billetes de esa denominacion
+    metodo que disminye la cantidad de billetes de esa denominacion
     y retorna la cantidad de dinero que restara
     */
     @Override
