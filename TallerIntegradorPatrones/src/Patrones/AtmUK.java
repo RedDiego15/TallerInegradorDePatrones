@@ -15,9 +15,14 @@ public class AtmUK {
     protected double dinero = 0;
     protected ArrayList <Manejador> manejadores; // Cada manejador puede entregar dinero de una sola denominación  Chain responsability
     private Scanner sc = new Scanner(System.in);
+    private static AtmUK instace = new AtmUK();
+
+    public static AtmUK getInstace() {
+        return instace;
+    }
 
     // -----------------
-    public AtmUK() {
+    private  AtmUK() { //Singleton
       manejadores = new ArrayList<Manejador>();
       this.addManejador(new Manejador(0,20));
       this.addManejador(new Manejador(0,10));

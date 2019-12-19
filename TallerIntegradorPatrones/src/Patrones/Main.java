@@ -11,16 +11,16 @@ public class Main
     {
         // Crear un único cajero Automático de dólares con 100 billetes de 20, 100 de 10, 
         // 10 monedas de 0.50, 10 de 0.25 y 1000 de 0.05
-        AtmUK atm = new AtmUK();
+       
         
         Account cuenta1 = new Account(1, 100);
-        atm.ingresarDinero(100, 20);
-        atm.ingresarDinero(100, 10);
-        atm.ingresarDinero(10, 0.5);
-        atm.ingresarDinero(10, 0.25);
-        atm.ingresarDinero(1000, 0.05);
+        AtmUK.getInstace().ingresarDinero(100, 20);
+        AtmUK.getInstace().ingresarDinero(100, 10);
+        AtmUK.getInstace().ingresarDinero(10, 0.5);
+        AtmUK.getInstace().ingresarDinero(10, 0.25);
+        AtmUK.getInstace().ingresarDinero(1000, 0.05);
 
-        atm.transaction(cuenta1);
+        AtmUK.getInstace().transaction(cuenta1);
 
 
 
