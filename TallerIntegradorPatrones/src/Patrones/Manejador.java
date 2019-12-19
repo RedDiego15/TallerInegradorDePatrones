@@ -5,34 +5,30 @@
  */
 package Patrones;
 
-public class ManejadorEntero implements Transaction //Strategy
+public class Manejador
 {
     protected int monto;
-    protected int denominacion;
+    protected double denominacion;
 
-    public ManejadorEntero(int monto, double denominacion){
+    public Manejador(int monto, double denominacion){
         this.monto = monto; // Total de billetes
-        this.denominacion = new Double(denominacion).intValue(); // Valor de cada billete
+        this.denominacion = denominacion; // Valor de cada billete
     }
+
     public int getMonto(){ return monto; }
-    public int getDenominacion(){ return denominacion; }
+    public double getDenominacion(){ return denominacion; }
     public void setMonto(int monto){ this.monto = monto; }
-    
-    /*
-    metodo que disminye la catidad de billetes de esa denominacion
-    y retorna la cantidad de dinero que restara
-    */
-    @Override
-    public double retirar(Double amount){
+
+     public double retirar(Double amount){
         // Implementar  
-        if(monto-amount>0){
+        if(monto>0){
             int cantidadBilletes = new Double(amount/denominacion).intValue();
             this.monto -= cantidadBilletes;
             return cantidadBilletes*this.denominacion;
         }
         return 0;
     }
-    @Override
+
     public boolean depositar(int monto, int denominacion){
         if(this.denominacion == denominacion){
             this.monto+=monto;
