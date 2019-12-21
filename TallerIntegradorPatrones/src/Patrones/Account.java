@@ -46,5 +46,23 @@ public final class Account {
         }
          
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public void setC(Currency c) {
+        this.c = c;
+    }
+    
+    
      
 }
