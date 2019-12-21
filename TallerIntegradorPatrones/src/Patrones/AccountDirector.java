@@ -14,7 +14,7 @@ public class AccountDirector {
     }
     
     public void changeBuilder(AccountBuilder accountBuilder){
-        
+        this.accountBuilder = accountBuilder;
     }
     
     public void makeAccount(){
